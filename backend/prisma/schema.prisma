@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model printer_page_size {
+  printer_id   String  @db.Char(36)
+  page_size    String  @db.Char(2) // A3 | A4 | A5
+  current_page Int     // 0-1000
+  printer      printer @relation(fields: [printer_id], references: [id], onDelete: Cascade, map: "fk_page_size_printer1")
+
+  @@id([printer_id, page_size])
+}
+
+model print_job {
+  id         String  @id @default(uuid()) @db.Char(36) // ID mới làm khóa chính
+  printer_id String  @db.Char(36)
+  student_id String  @db.Char(36)
+  filename   String  @db.VarChar(100)
+  time       DateTime @db.DateTime(0)
+  page       Int     // 1 - 200
+  copy       Int     // 1 - 10
+  page_size  String  @db.Char(2) // A3 | A4 | A5
+  two_side   Boolean @db.Bit(1)
+  color      Boolean @db.Bit(1)
+  status     String  @db.VarChar(8) // progress | success | fail
+  printer    printer @relation(fields: [printer_id], references: [id], onDelete: Cascade, map: "fk_print_job_printer")
+  user       user    @relation(fields: [student_id], references: [uid], onDelete: Cascade, map: "fk_print_job_user1")
+
+  @@index([student_id, printer_id], map: "fk_print_job_user_printer_idx")
+}
+
+model printer {
+  id           String               @id @default(uuid()) @db.Char(36)
+  name         String               @db.VarChar(45)
+  machine_type String               @db.VarChar(45)
+  two_side     Boolean              @db.Bit(1)
+  color        Boolean              @db.Bit(1)
+  floor        Int                  // [0-8]
+  building     String               @db.Char(2) // H1 | H2 | H3 | H6
+  status       String               @db.VarChar(7) // enable | disable
+  page_size    printer_page_size[]
+  print_job    print_job[]
+}
+
+model user {
+  uid       String               @id @default(uuid()) @db.Char(36)
+  username  String               @db.VarChar(45) @unique
+  password  String               @db.VarChar(45)
+  role      String               @db.VarChar(7)
+  mssv      Int?
+  print_job print_job[]
+  page_size student_page_size[]
+}
+
+model student_page_size {
+  student_id   String  @db.Char(36)
+  page_size    String  @db.Char(2) // A3 | A4 | A5
+  current_page Int     @default(0) // Nếu không có trang nào thì mặc định là 0
+  user         user    @relation(fields: [student_id], references: [uid], onDelete: Cascade, map: "fk_student_page_size_user")
+
+  @@id([student_id, page_size])
+}
