@@ -36,6 +36,10 @@ const studentRoutes: RouteObject[] = [
     path: "buy-pages",
     lazy: lazy(() => import("./pages/buy/BuyPages")),
   },
+  {
+    path: "test",
+    lazy: lazy(() => import("./pages/testAPI/test")),
+  },
 ];
 
 // Route dành cho SPSO

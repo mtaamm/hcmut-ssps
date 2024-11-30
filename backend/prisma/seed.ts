@@ -43,7 +43,7 @@ async function main() {
 
   // Create 20 printers
   const printers = await Promise.all(
-    Array.from({ length: 20 }).map(() =>
+    Array.from({ length: 100 }).map(() =>
       prisma.printer.create({
         data: {
           name: faker.company.name(),
@@ -66,7 +66,7 @@ async function main() {
         data: {
           printer_id: printer.id,
           page_size: pageSize,
-          current_page: faker.number.int({ min: 0, max: 1000 }),
+          current_page: faker.number.int({ min: 200, max: 1000 }),
         },
       });
     }
@@ -76,7 +76,7 @@ async function main() {
   const statuses = ['progress', 'success', 'fail'];
 const fileTypes = ['.docx', '.pdf', '.xlsx', '.csv'];
 
-for (let i = 0; i < 500; i++) {
+for (let i = 0; i < 1000; i++) {
   const student = faker.helpers.arrayElement(students);
   const printer = faker.helpers.arrayElement(printers);
 

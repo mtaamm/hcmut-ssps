@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -6,14 +6,17 @@ import Sidebar from "./Sidebar";
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
-  const user = { id: 1, role: "student" }; // User giả để kiểm tra layout
+  const [user, setUser] = useState<{ id: string; role: string } | null>(null); // User giả để kiểm tra layout
 
   useEffect(() => {
-    // Điều hướng nếu không có user (chưa đăng nhập)
-    if (user === null) {
+    // Lấy dữ liệu sinh viên từ localStorage
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    } else {
       navigate("/login");
     }
-  }, [user, navigate]); // Khi user thay đổi, useEffect sẽ được gọi lại
+  }, []);
 
   // Xác định sidebar items
   const studentSidebarItems = [

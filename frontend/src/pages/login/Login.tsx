@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import { userAPI } from "../../axios/user";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const response = await userAPI.login(username, password);
-    console.log(response);
-    localStorage.setItem("user", JSON.stringify(response));
+    if (response) {
+      localStorage.setItem("user", JSON.stringify(response));
+      if (response.role === "student") navigate("/home");
+      else navigate("/manage-printers");
+    }
   };
 
   return (

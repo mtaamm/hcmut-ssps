@@ -70,6 +70,8 @@ export class UserService {
 
       return {
         uid: user.uid,
+        username: user.username,
+        password: user.password,
         role: user.role,
         mssv: user.mssv,
         print_job_count: printJobCount,
@@ -82,5 +84,47 @@ export class UserService {
     } else {
       throw new UnauthorizedException('Unsupported role');
     }
+  }
+
+  async buyPage(
+    uid: string,
+    pageSize: string,
+    page: number,
+  ): Promise<{ status: string }> {
+    // Tìm kiếm student_page_size theo UID và khổ giấy
+    const studentPageSize = await this.prisma.student_page_size.findUnique({
+      where: {
+        student_id_page_size: {
+          student_id: uid,
+          page_size: pageSize,
+        },
+      },
+    });
+
+    // Nếu không tồn tại, tạo mới
+    if (!studentPageSize) {
+      await this.prisma.student_page_size.create({
+        data: {
+          student_id: uid,
+          page_size: pageSize,
+          current_page: page,
+        },
+      });
+    } else {
+      // Nếu tồn tại, cập nhật số lượng trang
+      await this.prisma.student_page_size.update({
+        where: {
+          student_id_page_size: {
+            student_id: uid,
+            page_size: pageSize,
+          },
+        },
+        data: {
+          current_page: studentPageSize.current_page + page,
+        },
+      });
+    }
+
+    return { status: 'success' };
   }
 }

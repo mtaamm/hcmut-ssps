@@ -10,4 +10,13 @@ export class UserController {
     const { username, password } = body;
     return this.userService.login(username, password);
   }
+
+  @Post('buy-page')
+  async buyPage(
+    @Body('uid') uid: string,
+    @Body('page_size') pageSize: string,
+    @Body('page') page: number,
+  ) {
+    return this.userService.buyPage(uid, pageSize, page);
+  }
 }

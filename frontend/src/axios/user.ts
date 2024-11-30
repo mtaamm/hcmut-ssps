@@ -21,6 +21,8 @@ export interface PageSize {
 
 export interface Student {
   uid: string;
+  username: string;
+  password: string;
   role: string;
   mssv: number;
   print_job_count: number;
@@ -42,5 +44,5 @@ export const userAPI = {
     } catch(error) {
       console.log(error)
     }
-  }
+  },
 }

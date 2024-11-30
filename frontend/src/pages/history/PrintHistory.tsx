@@ -1,23 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Paginator } from "primereact/paginator";
 import { Button } from "primereact/button";
 import { Link } from "react-router-dom";
+import { PrintHistory, studentAPI } from "../../axios/student";
 
 const HistoryPrintPage: React.FC = () => {
-  // Dữ liệu giả lập
-  const historyData = Array.from({ length: 20 }, (_, index) => ({
-    filename: `File ${index + 1}`,
-    time: new Date().toISOString(),
-    printer_name: `Printer ${(index % 3) + 1}`,
-    page: Math.floor(Math.random() * 100 + 1),
-    status: ["progress", "success", "fail"][index % 3],
-  }));
-
-  // Trạng thái phân trang
+  const [historyData, setHistoryData] = useState<PrintHistory[]>([]);
   const [first, setFirst] = useState(0); // Vị trí đầu tiên của trang
   const [rows, setRows] = useState(5); // Số dòng mỗi trang
+
+  // Gọi API để lấy dữ liệu
+  useEffect(() => {
+    const fetchHistoryData = async () => {
+      const response: PrintHistory[] | undefined =
+        await studentAPI.getPrintHistory();
+      if (response) setHistoryData(response);
+    };
+
+    fetchHistoryData();
+  }, []);
 
   // Cập nhật phân trang
   const onPageChange = (event: any) => {
@@ -26,14 +29,14 @@ const HistoryPrintPage: React.FC = () => {
   };
 
   // Template cho cột status
-  const statusTemplate = (rowData: any) => {
+  const statusTemplate = (rowData: PrintHistory) => {
     const statusMap = {
       progress: { color: "orange", icon: "pi pi-spinner", label: "Đang xử lý" },
       success: { color: "green", icon: "pi pi-check", label: "Thành công" },
       fail: { color: "red", icon: "pi pi-times", label: "Thất bại" },
     };
 
-    const status: keyof typeof statusMap = rowData.status;
+    const status = rowData.status;
     const { color, icon, label } = statusMap[status];
 
     return (
@@ -65,14 +68,66 @@ const HistoryPrintPage: React.FC = () => {
         totalRecords={historyData.length}
         onPage={onPageChange}
       >
-        <Column field="filename" header="Tên file" />
+        {/* Cột tên file */}
+        <Column
+          field="filename"
+          header="Tên file"
+          body={(rowData) => (
+            <span
+              className="block max-w-[200px] truncate"
+              title={rowData.filename}
+            >
+              {rowData.filename}
+            </span>
+          )}
+        />
+
+        {/* Cột thời gian */}
         <Column
           field="time"
           header="Thời gian"
-          body={(rowData) => new Date(rowData.time).toLocaleString()}
+          body={(rowData) =>
+            new Date(rowData.time).toLocaleString("vi-VN", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          }
         />
-        <Column field="printer_name" header="Tên máy in" />
-        <Column field="page" header="Số trang" />
+
+        {/* Cột tên máy in */}
+        <Column
+          field="printer_name"
+          header="Tên máy in"
+          body={(rowData) => (
+            <span
+              className="block max-w-[150px] truncate"
+              title={rowData.printer_name}
+            >
+              {rowData.printer_name}
+            </span>
+          )}
+        />
+
+        {/* Cột vị trí */}
+        <Column
+          field="printer_floor"
+          header="Vị trí"
+          body={(rowData) =>
+            `${rowData.printer_building} Tầng (${rowData.printer_floor})`
+          }
+        />
+
+        {/* Cột số trang */}
+        <Column
+          field="page"
+          header="Số trang"
+          body={(rowData) => `${rowData.page} (${rowData.copy} bản sao)`}
+        />
+
+        {/* Cột trạng thái */}
         <Column field="status" header="Trạng thái" body={statusTemplate} />
       </DataTable>
 
