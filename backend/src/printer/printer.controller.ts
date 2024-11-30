@@ -13,15 +13,13 @@ export class PrinterController {
     @Body('two_side') twoSide: boolean,
     @Body('color') color: boolean,
   ) {
-    const twoSideBool = twoSide === true;
-    const colorBool = color === true;
-    console.log(pageSize, page, copy, twoSide, typeof(twoSide), color)
+    console.log(pageSize, page, copy, twoSide, color)
     return this.printerService.getMatchPrinters(
       pageSize,
       page,
       copy,
-      twoSideBool,
-      colorBool,
+      twoSide,
+      color,
     );
   }
 }

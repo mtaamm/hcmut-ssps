@@ -9,7 +9,7 @@ import { PrintHistory, studentAPI } from "../../axios/student";
 const HistoryPrintPage: React.FC = () => {
   const [historyData, setHistoryData] = useState<PrintHistory[]>([]);
   const [first, setFirst] = useState(0); // Vị trí đầu tiên của trang
-  const [rows, setRows] = useState(5); // Số dòng mỗi trang
+  const [rows, setRows] = useState(10); // Số dòng mỗi trang
 
   // Gọi API để lấy dữ liệu
   useEffect(() => {
@@ -65,6 +65,7 @@ const HistoryPrintPage: React.FC = () => {
       <DataTable
         value={historyData.slice(first, first + rows)}
         rows={rows}
+        style={{ marginTop: "10px" }}
         totalRecords={historyData.length}
         onPage={onPageChange}
       >
@@ -116,7 +117,7 @@ const HistoryPrintPage: React.FC = () => {
           field="printer_floor"
           header="Vị trí"
           body={(rowData) =>
-            `${rowData.printer_building} Tầng (${rowData.printer_floor})`
+            `${rowData.printer_building} - Tầng ${rowData.printer_floor}`
           }
         />
 
@@ -136,7 +137,7 @@ const HistoryPrintPage: React.FC = () => {
         rows={rows}
         totalRecords={historyData.length}
         onPageChange={onPageChange}
-        rowsPerPageOptions={[5, 10, 20]}
+        rowsPerPageOptions={[10, 20, 30, 50]}
       />
     </div>
   );

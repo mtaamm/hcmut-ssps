@@ -52,8 +52,8 @@ export class PrintJobController {
       page_size,
       page: parseInt(page, 10),
       copy: parseInt(copy, 10),
-      two_side: two_side === 'true',
-      color: color === 'true',
+      two_side,
+      color,
     });
   }
 }

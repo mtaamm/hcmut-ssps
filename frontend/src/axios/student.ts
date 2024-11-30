@@ -20,6 +20,11 @@ export interface MatchPrinter {
   building: string
 }
 
+export interface CreatePrintJobResponse {
+  status: string
+  message: string
+}
+
 let uid =""
 const user = localStorage.getItem("user");
 if (user) {
@@ -62,6 +67,16 @@ export const studentAPI = {
         copy: copy,
         two_side: two_side,
         color: color
+      })
+      return respone
+    } catch(error) {
+      console.log(error)
+    }
+  },
+  createPrintJob: async(printer_id: string, filename: string, page_size: string, page: number, copy: number, two_side: boolean, color: boolean) => {
+    try {
+      const respone: CreatePrintJobResponse = await axiosClient.post('print-job/create-print-job', {
+        printer_id: printer_id, student_id: uid, filename: filename, page_size: page_size, page: page, copy: copy, two_side: two_side, color: color
       })
       return respone
     } catch(error) {
