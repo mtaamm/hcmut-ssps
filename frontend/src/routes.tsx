@@ -22,19 +22,19 @@ const routesNoLayout: RouteObject[] = [
 const studentRoutes: RouteObject[] = [
   {
     path: "home",
-    lazy: lazy(() => import("./pages/home/HomePage")),
+    lazy: lazy(() => import("./pages/student/home/HomePage")),
   },
   {
     path: "create-print-job",
-    lazy: lazy(() => import("./pages/print/CreatePrintJob")),
+    lazy: lazy(() => import("./pages/student/print/CreatePrintJob")),
   },
   {
     path: "print-history",
-    lazy: lazy(() => import("./pages/history/PrintHistory")),
+    lazy: lazy(() => import("./pages/student/history/PrintHistory")),
   },
   {
     path: "buy-pages",
-    lazy: lazy(() => import("./pages/buy/BuyPages")),
+    lazy: lazy(() => import("./pages/student/buy/BuyPages")),
   },
   {
     path: "test",
@@ -46,15 +46,19 @@ const studentRoutes: RouteObject[] = [
 const spsoRoutes: RouteObject[] = [
   {
     path: "manage-printers",
-    lazy: lazy(() => import("./pages/printers/ManagePrinters")),
+    lazy: lazy(() => import("./pages/spso/printers/ManagePrinters")),
+  },
+  {
+    path: "manage-printers2",
+    lazy: lazy(() => import("./pages/spso/printers/ManagePrinters2")),
   },
   {
     path: "manage-activities",
-    lazy: lazy(() => import("./pages/activities/ManageActivities")),
+    lazy: lazy(() => import("./pages/spso/activities/ManageActivities")),
   },
   {
     path: "manage-student-activity/:id",
-    lazy: lazy(() => import("./pages/activities/ManageStudent")),
+    lazy: lazy(() => import("./pages/spso/activities/ManageStudent")),
   },
 ];
 

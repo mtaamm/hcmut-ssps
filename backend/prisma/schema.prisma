@@ -38,6 +38,7 @@ model printer {
   id           String               @id @default(uuid()) @db.Char(36)
   name         String               @db.VarChar(45)
   machine_type String               @db.VarChar(45)
+  time         DateTime             @db.DateTime(0)
   two_side     Boolean              @db.Bit(1)
   color        Boolean              @db.Bit(1)
   floor        Int                  // [0-8]

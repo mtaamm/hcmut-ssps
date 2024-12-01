@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Student } from "../../axios/user";
+import { Student } from "../../../axios/user";
 import { format } from "date-fns";
 
 const HomePage: React.FC = () => {

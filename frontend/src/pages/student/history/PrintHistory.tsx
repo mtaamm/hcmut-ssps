@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import { Paginator } from "primereact/paginator";
 import { Button } from "primereact/button";
 import { Link } from "react-router-dom";
-import { PrintHistory, studentAPI } from "../../axios/student";
+import { PrintHistory, studentAPI } from "../../../axios/student";
 
 const HistoryPrintPage: React.FC = () => {
   const [historyData, setHistoryData] = useState<PrintHistory[]>([]);
@@ -117,7 +117,7 @@ const HistoryPrintPage: React.FC = () => {
           field="printer_floor"
           header="Vị trí"
           body={(rowData) =>
-            `${rowData.printer_building} - Tầng ${rowData.printer_floor}`
+            `${rowData.printer_building}-Tầng ${rowData.printer_floor}`
           }
         />
 

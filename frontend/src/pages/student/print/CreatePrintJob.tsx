@@ -7,8 +7,8 @@ import { InputNumber } from "primereact/inputnumber";
 import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import { Steps } from "primereact/steps";
-import { studentAPI, MatchPrinter } from "../../axios/student"; // Import API & MatchPrinter interface
-import { Student, userAPI } from "../../axios/user";
+import { studentAPI, MatchPrinter } from "../../../axios/student"; // Import API & MatchPrinter interface
+import { Student, userAPI } from "../../../axios/user";
 
 const CreatePrintJob: React.FC = () => {
   const [user, setUser] = useState<Student | null>(null); // User lấy từ localStorage
@@ -302,7 +302,7 @@ const CreatePrintJob: React.FC = () => {
                 >
                   <p className="font-medium">{printer.name}</p>
                   <p className="text-gray-600">
-                    {printer.building} - Tầng {printer.floor}
+                    {printer.building}-Tầng {printer.floor}
                   </p>
                 </div>
               ))

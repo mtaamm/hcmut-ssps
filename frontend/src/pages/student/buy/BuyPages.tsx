@@ -5,8 +5,8 @@ import { Button } from "primereact/button";
 import { RadioButton } from "primereact/radiobutton";
 import { Dropdown } from "primereact/dropdown";
 import { Link } from "react-router-dom";
-import { Student, userAPI } from "../../axios/user";
-import { studentAPI } from "../../axios/student";
+import { Student, userAPI } from "../../../axios/user";
+import { studentAPI } from "../../../axios/student";
 import { Toast } from "primereact/toast";
 
 const BuyPagesPage: React.FC = () => {

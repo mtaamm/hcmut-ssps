@@ -41,13 +41,14 @@ async function main() {
     },
   });
 
-  // Create 20 printers
+  // Create 100 printers
   const printers = await Promise.all(
     Array.from({ length: 100 }).map(() =>
       prisma.printer.create({
         data: {
           name: faker.company.name(),
           machine_type: faker.word.adjective() + ' Printer',
+          time: new Date(),
           two_side: faker.datatype.boolean(),
           color: faker.datatype.boolean(),
           floor: faker.number.int({ min: 0, max: 8 }),
