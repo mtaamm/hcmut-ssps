@@ -1,5 +1,5 @@
 import { tr } from '@faker-js/faker/.';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -125,4 +125,92 @@ export class PrintJobService {
 
     return { status: 'success', message: 'Lệnh in đã được tạo thành công' };
   }
+
+  async getStudentHistorySpso(
+    spso_id: string,
+    uid: string,
+  ): Promise<{
+    status: string;
+    message: string;
+    data?: any;
+  }> {
+    // Kiểm tra `spso_id` có tồn tại và role có đúng không
+    const spso = await this.prisma.user.findUnique({
+      where: { uid: spso_id },
+    });
+  
+    if (!spso) {
+      throw new HttpException('SPSO ID không tồn tại', HttpStatus.BAD_REQUEST);
+    }
+  
+    if (spso.role !== 'spso') {
+      throw new HttpException('Người dùng không có quyền truy cập', HttpStatus.FORBIDDEN);
+    }
+  
+    // Kiểm tra `uid` có tồn tại hay không
+    const student = await this.prisma.user.findUnique({
+      where: { uid },
+      include: {
+        page_size: true, // Lấy thông tin số trang theo từng khổ giấy
+        print_job: {
+          include: {
+            printer: { select: { name: true } }, // Lấy `printer_name` từ bảng `printer`
+          },
+        },
+      },
+    });
+  
+    if (!student || student.role !== 'student') {
+      throw new HttpException('Student ID không tồn tại', HttpStatus.BAD_REQUEST);
+    }
+  
+    // Xử lý dữ liệu student
+    const totalPage = student.page_size.reduce(
+      (sum, pageSize) => sum + pageSize.current_page,
+      0,
+    );
+  
+    const totalPrintJob = student.print_job.length;
+  
+    const progressPrintJob = student.print_job.filter(
+      (job) => job.status === 'progress',
+    ).length;
+  
+    const successPrintJob = student.print_job.filter(
+      (job) => job.status === 'success',
+    ).length;
+  
+    const failPrintJob = student.print_job.filter(
+      (job) => job.status === 'fail',
+    ).length;
+  
+    // Trả về kết quả
+    return {
+      status: 'success',
+      message: 'Thành công',
+      data: {
+        name: student.name,
+        mssv: student.mssv || null,
+        total_page: totalPage,
+        total_print_job: totalPrintJob,
+        progress_print_job: progressPrintJob,
+        success_print_job: successPrintJob,
+        fail_print_job: failPrintJob,
+        print_jobs: student.print_job.map((job) => ({
+          id: job.id,
+          filename: job.filename,
+          time: job.time,
+          printer_name: job.printer?.name || null, // Lấy `printer_name` từ liên kết
+          page: job.page,
+          copy: job.copy,
+          page_size: job.page_size,
+          two_side: job.two_side,
+          color: job.color,
+          status: job.status,
+        })),
+      },
+    };
+  }
+  
+
 }

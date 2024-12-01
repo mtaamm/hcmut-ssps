@@ -61,7 +61,6 @@ const ManagePrinters: React.FC = () => {
 
   const loadPrinters = async () => {
     const response: GetAllResponse | undefined = await spsoAPI.getAll();
-    console.log(response);
     if (response?.status === "success") setPrinters(response.data);
   };
 

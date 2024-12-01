@@ -56,4 +56,16 @@ export class PrintJobController {
       color,
     });
   }
+
+  @Get('get-student-history-spso')
+  async getStudentHistorySpso(
+    @Query('spso_id') spso_id: string,
+    @Query('uid') uid: string,
+  ) {
+    if (!spso_id || !uid) {
+      throw new HttpException('Thiếu thông tin yêu cầu', HttpStatus.BAD_REQUEST);
+    }
+
+    return this.printJobService.getStudentHistorySpso(spso_id, uid);
+  }
 }

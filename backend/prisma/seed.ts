@@ -48,7 +48,7 @@ async function main() {
     Array.from({ length: 100 }).map((_, index) =>
       prisma.printer.create({
         data: {
-          name: `student${index + 1}`,
+          name: `printer${index + 1}`,
           machine_type: faker.word.adjective() + faker.word.noun(),
           time: new Date(),
           two_side: faker.datatype.boolean(),

@@ -177,6 +177,7 @@ export class UserService {
       ).length;
   
       return {
+        id: student.uid,
         name: student.name,
         mssv: student.mssv || null,
         total_page: totalPage,

@@ -68,6 +68,50 @@ export interface GetPrinterDetailResponse {
   data: PrinterDetails;
 }
 
+export interface StudentSummary {
+  id: string
+  name: string
+  mssv: number
+  total_page: number
+  total_print_job: number
+  progress_print_job: number
+  success_print_job: number
+  fail_print_job: number
+}
+
+export interface GetStudentSummaryResponse {
+  status: "success" | "unsuccess";
+  message: string;
+  data: StudentSummary[]
+}
+
+export interface PrintJob {
+  id: string;
+  filename: string;
+  printer_name: string;
+  time: string;
+  page: number;
+  page_size: string;
+  copy: number;
+  status: "progress" | "success" | "fail";
+}
+
+export interface StudentDetails {
+  name: string
+  mssv: number
+  total_page: number
+  total_print_job: number
+  progress_print_job: number
+  success_print_job: number
+  fail_print_job: number
+  print_jobs: PrintJob[]
+}
+
+export interface GetStudentDetailResponse {
+  status: "success" | "unsuccess";
+  message: string;
+  data: StudentDetails
+}
 
 let uid =""
 const user = localStorage.getItem("user");
@@ -146,6 +190,29 @@ export const spsoAPI = {
       })
       return respone
     } catch (error) {
+      console.log(error)
+    }
+  },
+  getStudentSummary: async () => {
+    try {
+      const respone:GetStudentSummaryResponse = await axiosClient.get('user/get-student-activities', {
+        params: {spso_id: uid}
+      })
+      return respone
+    } catch(error) {
+      console.log(error)
+    }
+  },
+  getStudentDetail: async (id: string) => {
+    try {
+      const respone: GetStudentDetailResponse = await axiosClient.get('print-job/get-student-history-spso', {
+        params: {
+          spso_id: uid,
+          uid: id
+        }
+      })
+      return respone
+    } catch(error) {
       console.log(error)
     }
   }
