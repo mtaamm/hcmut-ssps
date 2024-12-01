@@ -3,10 +3,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Link } from "react-router-dom";
 import {
-  GetStudentDetailResponse,
   GetStudentSummaryResponse,
   spsoAPI,
-  StudentDetails,
   StudentSummary,
 } from "../../../axios/spso";
 
@@ -45,10 +43,10 @@ const ManageStudentActivity: React.FC = () => {
         rows={rows}
         first={first}
         onPage={handlePageChange}
-        rowsPerPageOptions={[5, 10, 20]}
+        rowsPerPageOptions={[10, 20, 30, 50]}
       >
         {/* Họ và tên */}
-        <Column field="name" header="Họ và tên" sortable></Column>
+        <Column field="name" className="w-56" header="Họ và tên"></Column>
         {/* MSSV */}
         <Column field="mssv" header="MSSV" sortable></Column>
         {/* Số trang sở hữu */}

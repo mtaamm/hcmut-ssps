@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { userAPI } from "../../axios/user";
 import { useNavigate } from "react-router-dom";
+import { Toast } from "primereact/toast";
 
 const Login: React.FC = () => {
+  const toast = useRef<Toast | null>(null);
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,11 +16,18 @@ const Login: React.FC = () => {
       localStorage.setItem("user", JSON.stringify(response));
       if (response.role === "student") navigate("/home");
       else navigate("/manage-printers");
+    } else {
+      toast.current?.show({
+        severity: "error",
+        summary: "Lỗi",
+        detail: "Đăng nhập thất bại, hãy kiểm tra và thử lại",
+      });
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
+      <Toast ref={toast} />
       <div className="bg-white p-8 shadow-lg rounded-lg w-96">
         <h1 className="text-2xl font-semibold text-center mb-6">
           Đăng nhập bằng tài khoản BKNetID

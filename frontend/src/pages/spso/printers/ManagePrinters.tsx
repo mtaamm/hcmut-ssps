@@ -218,6 +218,7 @@ const ManagePrinters: React.FC = () => {
         <Column
           field="time"
           header="Thời gian thêm"
+          sortable
           body={(rowData) =>
             new Date(rowData.time).toLocaleString("vi-VN", {
               hour: "2-digit",
@@ -230,7 +231,8 @@ const ManagePrinters: React.FC = () => {
         />
         <Column
           field="page_size"
-          header="Lượng giấy"
+          header="Giấy"
+          sortable
           body={(rowData) =>
             rowData.page_size.reduce(
               (sum: number, ps: { page_size: string; current_page: number }) =>

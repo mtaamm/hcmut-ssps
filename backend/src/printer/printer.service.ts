@@ -320,7 +320,7 @@ export class PrinterService {
       where: { printer_id },
       include: {
         user: {
-          select: { mssv: true },
+          select: { mssv: true, name: true },
         },
       },
       orderBy: {time: 'desc'}
@@ -346,6 +346,7 @@ export class PrinterService {
         copy: job.copy,
         status: job.status,
         mssv: job.user?.mssv || null,
+        name: job.user?.name || null
       })),
     };
   

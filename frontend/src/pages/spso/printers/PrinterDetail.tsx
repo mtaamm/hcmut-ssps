@@ -106,7 +106,7 @@ const PrinterDetail: React.FC = () => {
               <strong>Tên:</strong> {printer.name}
             </p>
             <p>
-              <strong>Loại máy:</strong> {printer.machine_type}
+              <strong>Kiểu máy:</strong> {printer.machine_type}
             </p>
             <p>
               <strong>Vị trí:</strong> {printer.building} - Tầng {printer.floor}

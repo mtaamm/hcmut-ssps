@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   // Create 20 students
   const students = await Promise.all(
-    Array.from({ length: 20 }).map((_, index) =>
+    Array.from({ length: 300 }).map((_, index) =>
       prisma.user.create({
         data: {
           username: `student${index + 1}`,
@@ -79,7 +79,7 @@ async function main() {
   const statuses = ['progress', 'success', 'fail'];
 const fileTypes = ['.docx', '.pdf', '.xlsx', '.csv'];
 
-for (let i = 0; i < 1000; i++) {
+for (let i = 0; i < 2000; i++) {
   const student = faker.helpers.arrayElement(students);
   const printer = faker.helpers.arrayElement(printers);
 

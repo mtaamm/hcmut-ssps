@@ -47,6 +47,7 @@ export interface PrintJob {
   copy: number;
   status: "success" | "fail" | "progress";
   mssv: number;
+  name: string;
 }
 
 export interface PrinterDetails {
