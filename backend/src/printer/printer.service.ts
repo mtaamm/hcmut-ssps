@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrinterParam, PageSize } from './dto/create-printer.dto';
+import { tr } from '@faker-js/faker/.';
 
 @Injectable()
 export class PrinterService {
@@ -276,6 +277,79 @@ export class PrinterService {
     } catch (error) {
       return { status: 'unsuccess', message: 'Lỗi khi xóa printer' };
     }
+  }
+  
+  async getPrinterDetail(param: { uid: string; printer_id: string }): Promise<{
+    status: string;
+    message: string;
+    data?: any;
+  }> {
+    const { uid, printer_id } = param;
+  
+    const user = await this.prisma.user.findUnique({
+      where: { uid },
+    });
+  
+    if (!user) {
+      return { status: 'unsuccess', message: 'UID không tồn tại' };
+    }
+  
+    if (user.role !== 'spso') {
+      return { status: 'unsuccess', message: 'Không có quyền thực hiện thao tác này' };
+    }
+  
+    // Kiểm tra printer_id có tồn tại
+    const printer = await this.prisma.printer.findUnique({
+      where: { id: printer_id },
+      include: {
+        page_size: {
+          select: {
+            page_size: true,
+            current_page: true
+          }
+        }, // Bao gồm thông tin page_size của printer
+      },
+    });
+  
+    if (!printer) {
+      return { status: 'unsuccess', message: 'Printer ID không tồn tại' };
+    }
+  
+    // Truy vấn các print_job liên quan đến printer
+    const printJobs = await this.prisma.print_job.findMany({
+      where: { printer_id },
+      include: {
+        user: {
+          select: { mssv: true },
+        },
+      },
+      orderBy: {time: 'desc'}
+    });
+  
+    // Chuẩn bị dữ liệu trả về
+    const data = {
+      id: printer.id,
+      name: printer.name,
+      machine_type: printer.machine_type,
+      floor: printer.floor,
+      building: printer.building,
+      status: printer.status,
+      two_side: printer.two_side,
+      color: printer.color,
+      page_size: printer.page_size,
+      print_jobs: printJobs.map((job) => ({
+        id: job.id,
+        filename: job.filename,
+        time: job.time,
+        page: job.page,
+        page_size: job.page_size,
+        copy: job.copy,
+        status: job.status,
+        mssv: job.user?.mssv || null,
+      })),
+    };
+  
+    return { status: 'success', message: 'Success', data };
   }
   
 }

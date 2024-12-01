@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -18,5 +18,17 @@ export class UserController {
     @Body('page') page: number,
   ) {
     return this.userService.buyPage(uid, pageSize, page);
+  }
+
+  @Get('get-student-activities')
+  async getStudentActivities(@Query('spso_id') spso_id: string) {
+    if (!spso_id) {
+      return {
+        status: 'unsuccess',
+        message: 'SPSO ID là bắt buộc',
+      };
+    }
+
+    return this.userService.getStudentActivities(spso_id);
   }
 }

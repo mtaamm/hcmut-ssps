@@ -11,6 +11,7 @@ async function main() {
         data: {
           username: `student${index + 1}`,
           password: faker.internet.password(),
+          name: `Nguyễn Văn ${index+"A"}`,
           role: 'student',
           mssv: 2213020 + index,
         },
@@ -36,6 +37,7 @@ async function main() {
     data: {
       username: 'spso',
       password: faker.internet.password(),
+      name: 'spso',
       role: 'spso',
       mssv: null,
     },
@@ -43,11 +45,11 @@ async function main() {
 
   // Create 100 printers
   const printers = await Promise.all(
-    Array.from({ length: 100 }).map(() =>
+    Array.from({ length: 100 }).map((_, index) =>
       prisma.printer.create({
         data: {
-          name: faker.company.name(),
-          machine_type: faker.word.adjective() + ' Printer',
+          name: `student${index + 1}`,
+          machine_type: faker.word.adjective() + faker.word.noun(),
           time: new Date(),
           two_side: faker.datatype.boolean(),
           color: faker.datatype.boolean(),

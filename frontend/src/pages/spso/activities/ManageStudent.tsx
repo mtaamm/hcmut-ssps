@@ -71,7 +71,7 @@ const ManageStudent: React.FC = () => {
         <Button
           label="Quay lại"
           icon="pi pi-arrow-left"
-          className="p-button-sm"
+          className="p-button-outlined p-button-sm"
           onClick={() => navigate("/manage-activities")}
         />
       </div>

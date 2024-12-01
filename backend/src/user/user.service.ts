@@ -127,4 +127,71 @@ export class UserService {
 
     return { status: 'success' };
   }
+
+  async getStudentActivities(spso_id: string): Promise<{
+    status: string;
+    message: string;
+    data?: any[];
+  }> {
+    // Kiểm tra `spso_id` có tồn tại và role có đúng không
+    const spso = await this.prisma.user.findUnique({
+      where: { uid: spso_id },
+    });
+  
+    if (!spso) {
+      return { status: 'unsuccess', message: 'SPSO ID không tồn tại' };
+    }
+  
+    if (spso.role !== 'spso') {
+      return { status: 'unsuccess', message: 'Người dùng không có quyền truy cập' };
+    }
+  
+    // Truy vấn danh sách student
+    const students = await this.prisma.user.findMany({
+      where: { role: 'student' },
+      include: {
+        page_size: true, // Lấy thông tin số trang theo từng khổ giấy
+        print_job: true, // Lấy danh sách print_job
+      },
+    });
+  
+    // Xử lý dữ liệu
+    const data = students.map((student) => {
+      const totalPage = student.page_size.reduce(
+        (sum, pageSize) => sum + pageSize.current_page,
+        0,
+      );
+  
+      const totalPrintJob = student.print_job.length;
+  
+      const progressPrintJob = student.print_job.filter(
+        (job) => job.status === 'progress',
+      ).length;
+  
+      const successPrintJob = student.print_job.filter(
+        (job) => job.status === 'success',
+      ).length;
+  
+      const failPrintJob = student.print_job.filter(
+        (job) => job.status === 'fail',
+      ).length;
+  
+      return {
+        name: student.name,
+        mssv: student.mssv || null,
+        total_page: totalPage,
+        total_print_job: totalPrintJob,
+        progress_print_job: progressPrintJob,
+        success_print_job: successPrintJob,
+        fail_print_job: failPrintJob,
+      };
+    });
+  
+    return {
+      status: 'success',
+      message: 'Thành công',
+      data,
+    };
+  }
+  
 }

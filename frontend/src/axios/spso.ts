@@ -1,12 +1,5 @@
 import axiosClient from "./axiosClient";
 
-export interface PageSize {
-  printer_id: string;
-  page_size: string;
-  current_page: number;
-}
-
-
 export interface Printer {
   id: string;
   name: string;
@@ -17,7 +10,7 @@ export interface Printer {
   status: "enable" | "disable";
   two_side: boolean;
   color: boolean;
-  page_size: PageSize[];
+  page_size: PageSizeParam[];
 }
 
 export interface GetAllResponse {
@@ -44,6 +37,37 @@ export interface PostResponse {
   status: string
   message: string
 }
+
+export interface PrintJob {
+  id: string;
+  filename: string;
+  time: string;
+  page: number;
+  page_size: string;
+  copy: number;
+  status: "success" | "fail" | "progress";
+  mssv: number;
+}
+
+export interface PrinterDetails {
+  id: string;
+  name: string;
+  machine_type: string;
+  floor: number;
+  building: string;
+  status: "enable" | "disable";
+  two_side: boolean;
+  color: boolean;
+  page_size: PageSizeParam[];
+  print_jobs: PrintJob[];
+}
+
+export interface GetPrinterDetailResponse {
+  status: "success" | "unsuccess";
+  message: string;
+  data: PrinterDetails;
+}
+
 
 let uid =""
 const user = localStorage.getItem("user");
@@ -76,7 +100,7 @@ export const spsoAPI = {
       console.log(error)
     }
   },
-  edit: async(printer_id: string, page_size: PageSizeParam, floor: number, building: string) => {
+  edit: async(printer_id: string, page_size: PageSizeParam[], floor: number, building: string) => {
     try {
       const respone: PostResponse = await axiosClient.post('printer/edit', {
         uid: uid,
@@ -112,4 +136,17 @@ export const spsoAPI = {
       console.log(error)
     }
   },
+  getPrinterDetail: async(printer_id: string) => {
+    try {
+      const respone: GetPrinterDetailResponse = await axiosClient.get('/printer/get-printer-detail', {
+        params: {
+          uid: uid,
+          printer_id: printer_id
+        }
+      })
+      return respone
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }

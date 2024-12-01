@@ -45,6 +45,7 @@ CREATE TABLE `user` (
     `uid` CHAR(36) NOT NULL,
     `username` VARCHAR(45) NOT NULL,
     `password` VARCHAR(45) NOT NULL,
+    `name` VARCHAR(45) NOT NULL,
     `role` VARCHAR(7) NOT NULL,
     `mssv` INTEGER NULL,
 

@@ -52,7 +52,8 @@ model user {
   uid       String               @id @default(uuid()) @db.Char(36)
   username  String               @db.VarChar(45) @unique
   password  String               @db.VarChar(45)
-  role      String               @db.VarChar(7)
+  name      String               @db.VarChar(45)
+  role      String               @db.VarChar(7) //studetn|spso
   mssv      Int?
   print_job print_job[]
   page_size student_page_size[]

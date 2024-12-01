@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { MatchPrinter, studentAPI } from "../../axios/student";
+import { GetPrinterDetailResponse, spsoAPI } from "../../axios/spso";
 
 const Login: React.FC = () => {
   useEffect(() => {
     const fetch = async () => {
-      const response: MatchPrinter[] | undefined =
-        await studentAPI.getMatchPrinters("A4", 1, 1, false, true);
+      const response: GetPrinterDetailResponse | undefined =
+        await spsoAPI.getPrinterDetail("040d07d6-d1a9-410f-aca7-dc493ed8296e");
       console.log(response);
     };
     fetch();

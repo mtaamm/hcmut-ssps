@@ -49,8 +49,8 @@ const spsoRoutes: RouteObject[] = [
     lazy: lazy(() => import("./pages/spso/printers/ManagePrinters")),
   },
   {
-    path: "manage-printers2",
-    lazy: lazy(() => import("./pages/spso/printers/ManagePrinters2")),
+    path: "printer-detail/:id",
+    lazy: lazy(() => import("./pages/spso/printers/PrinterDetail")),
   },
   {
     path: "manage-activities",

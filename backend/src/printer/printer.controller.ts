@@ -105,4 +105,18 @@ export class PrinterController {
     return this.printerService.deletePrinter(body);
   }
 
+  @Get('get-printer-detail')
+  async getPrinterDetail(
+    @Query('uid') uid: string,
+    @Query('printer_id') printer_id: string,
+  ) {
+    if (!uid || !printer_id) {
+      return {
+        status: 'unsuccess',
+        message: 'Dữ liệu không hợp lệ, vui lòng kiểm tra lại',
+      };
+    }
+
+    return this.printerService.getPrinterDetail({ uid, printer_id });
+  }
 }
