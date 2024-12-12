@@ -194,7 +194,7 @@ const ManagePrinters: React.FC = () => {
       <div className="flex justify-between items-center mb-1">
         <h1 className="text-2xl font-bold">Quản lý máy in</h1>
         <Button
-          label="Add Printer"
+          label="Thêm máy in"
           icon="pi pi-plus"
           className="mb-4"
           onClick={() => setShowAddDialog(true)}

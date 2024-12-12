@@ -16,13 +16,19 @@ export class PrinterService {
   ): Promise<{ id: string; name: string; floor: number; building: string }[]> {
     // Tổng số trang cần thiết
     const totalPagesRequired = page * copy;
-
+  
     // Lấy danh sách máy in phù hợp với điều kiện
     const printers = await this.prisma.printer.findMany({
       where: {
         status: 'enable',
-        two_side: twoSide,
-        color: color,
+        // Nếu `twoSide` truyền vào là true thì kiểm tra `two_side: true`, ngược lại bỏ qua điều kiện này
+        OR: twoSide
+          ? [{ two_side: true }]
+          : [{ two_side: true }, { two_side: false }],
+        // Nếu `color` truyền vào là true thì kiểm tra `color: true`, ngược lại bỏ qua điều kiện này
+        AND: color
+          ? [{ color: true }]
+          : [{ color: true }, { color: false }],
         page_size: {
           some: {
             page_size: pageSize,
@@ -39,10 +45,10 @@ export class PrinterService {
         building: true,
       },
     });
-
+  
     return printers;
   }
-
+  
   async getAllPrinters(uid: string): Promise<{
     status: string;
     message: string;
