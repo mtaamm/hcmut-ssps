@@ -40,12 +40,12 @@ export class UserService {
           status: 'success',
         },
       });
-      const failPrintJob = printJobCount - progressPrintJob - successPrintJob
+      const failPrintJob = printJobCount - progressPrintJob - successPrintJob;
 
       const pageSize = await this.prisma.student_page_size.findMany({
         where: { student_id: user.uid },
         select: {
-          page_size: true,  
+          page_size: true,
           current_page: true,
         },
       });
@@ -137,15 +137,18 @@ export class UserService {
     const spso = await this.prisma.user.findUnique({
       where: { uid: spso_id },
     });
-  
+
     if (!spso) {
       return { status: 'unsuccess', message: 'SPSO ID không tồn tại' };
     }
-  
+
     if (spso.role !== 'spso') {
-      return { status: 'unsuccess', message: 'Người dùng không có quyền truy cập' };
+      return {
+        status: 'unsuccess',
+        message: 'Người dùng không có quyền truy cập',
+      };
     }
-  
+
     // Truy vấn danh sách student
     const students = await this.prisma.user.findMany({
       where: { role: 'student' },
@@ -154,28 +157,28 @@ export class UserService {
         print_job: true, // Lấy danh sách print_job
       },
     });
-  
+
     // Xử lý dữ liệu
     const data = students.map((student) => {
       const totalPage = student.page_size.reduce(
         (sum, pageSize) => sum + pageSize.current_page,
         0,
       );
-  
+
       const totalPrintJob = student.print_job.length;
-  
+
       const progressPrintJob = student.print_job.filter(
         (job) => job.status === 'progress',
       ).length;
-  
+
       const successPrintJob = student.print_job.filter(
         (job) => job.status === 'success',
       ).length;
-  
+
       const failPrintJob = student.print_job.filter(
         (job) => job.status === 'fail',
       ).length;
-  
+
       return {
         id: student.uid,
         name: student.name,
@@ -187,12 +190,11 @@ export class UserService {
         fail_print_job: failPrintJob,
       };
     });
-  
+
     return {
       status: 'success',
       message: 'Thành công',
       data,
     };
   }
-  
 }

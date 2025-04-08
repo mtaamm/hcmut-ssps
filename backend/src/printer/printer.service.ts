@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrinterParam, PageSize } from './dto/create-printer.dto';
-import { tr } from '@faker-js/faker/.';
 
 @Injectable()
 export class PrinterService {
@@ -16,7 +15,7 @@ export class PrinterService {
   ): Promise<{ id: string; name: string; floor: number; building: string }[]> {
     // Tổng số trang cần thiết
     const totalPagesRequired = page * copy;
-  
+
     // Lấy danh sách máy in phù hợp với điều kiện
     const printers = await this.prisma.printer.findMany({
       where: {
@@ -26,9 +25,7 @@ export class PrinterService {
           ? [{ two_side: true }]
           : [{ two_side: true }, { two_side: false }],
         // Nếu `color` truyền vào là true thì kiểm tra `color: true`, ngược lại bỏ qua điều kiện này
-        AND: color
-          ? [{ color: true }]
-          : [{ color: true }, { color: false }],
+        AND: color ? [{ color: true }] : [{ color: true }, { color: false }],
         page_size: {
           some: {
             page_size: pageSize,
@@ -45,10 +42,10 @@ export class PrinterService {
         building: true,
       },
     });
-  
+
     return printers;
   }
-  
+
   async getAllPrinters(uid: string): Promise<{
     status: string;
     message: string;
@@ -64,7 +61,11 @@ export class PrinterService {
     }
 
     if (user.role !== 'spso') {
-      return { status: 'unsuccess', message: 'Không có quyền truy cập', data: [] };
+      return {
+        status: 'unsuccess',
+        message: 'Không có quyền truy cập',
+        data: [],
+      };
     }
 
     // Lấy danh sách tất cả printer
@@ -79,9 +80,9 @@ export class PrinterService {
         status: true,
         two_side: true,
         color: true,
-        page_size: true
+        page_size: true,
       },
-      orderBy: {time: "desc"}
+      orderBy: { time: 'desc' },
     });
 
     return { status: 'success', message: 'success', data: printers };
@@ -103,7 +104,10 @@ export class PrinterService {
     }
 
     if (user.role !== 'spso') {
-      return { status: 'unsuccess', message: 'Không có quyền thực hiện thao tác này' };
+      return {
+        status: 'unsuccess',
+        message: 'Không có quyền thực hiện thao tác này',
+      };
     }
 
     // Tạo printer mới
@@ -135,7 +139,10 @@ export class PrinterService {
 
       return { status: 'success', message: 'Printer created successfully' };
     } catch (error) {
-      return { status: 'unsuccess', message: 'Lỗi khi tạo printer' };
+      return {
+        status: 'unsuccess',
+        message: 'Lỗi khi tạo printer: ' + error.message,
+      };
     }
   }
 
@@ -150,41 +157,44 @@ export class PrinterService {
     message: string;
   }> {
     const { uid, printer_id, page_size, floor, building } = param;
-  
+
     // Kiểm tra UID hợp lệ và có phải role SPSO không
     const user = await this.prisma.user.findUnique({
       where: { uid },
     });
-  
+
     if (!user) {
       return { status: 'unsuccess', message: 'UID không tồn tại' };
     }
-  
+
     if (user.role !== 'spso') {
-      return { status: 'unsuccess', message: 'Không có quyền thực hiện thao tác này' };
+      return {
+        status: 'unsuccess',
+        message: 'Không có quyền thực hiện thao tác này',
+      };
     }
-  
+
     // Kiểm tra printer_id hợp lệ
     const printer = await this.prisma.printer.findUnique({
       where: { id: printer_id },
     });
-  
+
     if (!printer) {
       return { status: 'unsuccess', message: 'Printer ID không tồn tại' };
     }
-  
+
     try {
       // Cập nhật thông tin printer
       await this.prisma.printer.update({
         where: { id: printer_id },
         data: { floor, building },
       });
-  
+
       // Xóa page_size cũ và thêm page_size mới
       await this.prisma.printer_page_size.deleteMany({
         where: { printer_id },
       });
-  
+
       await Promise.all(
         page_size.map((page) =>
           this.prisma.printer_page_size.create({
@@ -196,10 +206,13 @@ export class PrinterService {
           }),
         ),
       );
-  
+
       return { status: 'success', message: 'Printer updated successfully' };
     } catch (error) {
-      return { status: 'unsuccess', message: 'Lỗi khi cập nhật printer' };
+      return {
+        status: 'unsuccess',
+        message: 'Lỗi khi cập nhật printer: ' + error.message,
+      };
     }
   }
 
@@ -208,29 +221,32 @@ export class PrinterService {
     message: string;
   }> {
     const { uid, printer_id } = param;
-  
+
     // Kiểm tra UID hợp lệ và có phải role SPSO không
     const user = await this.prisma.user.findUnique({
       where: { uid },
     });
-  
+
     if (!user) {
       return { status: 'unsuccess', message: 'UID không tồn tại' };
     }
-  
+
     if (user.role !== 'spso') {
-      return { status: 'unsuccess', message: 'Không có quyền thực hiện thao tác này' };
+      return {
+        status: 'unsuccess',
+        message: 'Không có quyền thực hiện thao tác này',
+      };
     }
-  
+
     // Kiểm tra printer_id hợp lệ
     const printer = await this.prisma.printer.findUnique({
       where: { id: printer_id },
     });
-  
+
     if (!printer) {
       return { status: 'unsuccess', message: 'Printer ID không tồn tại' };
     }
-  
+
     try {
       // Đổi trạng thái status
       const updatedStatus = printer.status === 'enable' ? 'disable' : 'enable';
@@ -238,10 +254,16 @@ export class PrinterService {
         where: { id: printer_id },
         data: { status: updatedStatus },
       });
-  
-      return { status: 'success', message: `Printer status updated to ${updatedStatus}` };
+
+      return {
+        status: 'success',
+        message: `Printer status updated to ${updatedStatus}`,
+      };
     } catch (error) {
-      return { status: 'unsuccess', message: 'Lỗi khi cập nhật trạng thái printer' };
+      return {
+        status: 'unsuccess',
+        message: 'Lỗi khi cập nhật trạng thái printer: ' + error.message,
+      };
     }
   }
 
@@ -250,60 +272,69 @@ export class PrinterService {
     message: string;
   }> {
     const { uid, printer_id } = param;
-  
+
     // Kiểm tra UID hợp lệ và có phải role SPSO không
     const user = await this.prisma.user.findUnique({
       where: { uid },
     });
-  
+
     if (!user) {
       return { status: 'unsuccess', message: 'UID không tồn tại' };
     }
-  
+
     if (user.role !== 'spso') {
-      return { status: 'unsuccess', message: 'Không có quyền thực hiện thao tác này' };
+      return {
+        status: 'unsuccess',
+        message: 'Không có quyền thực hiện thao tác này',
+      };
     }
-  
+
     // Kiểm tra printer_id hợp lệ
     const printer = await this.prisma.printer.findUnique({
       where: { id: printer_id },
     });
-  
+
     if (!printer) {
       return { status: 'unsuccess', message: 'Printer ID không tồn tại' };
     }
-  
+
     try {
       // Xóa printer
       await this.prisma.printer.delete({
         where: { id: printer_id },
       });
-  
+
       return { status: 'success', message: 'Printer đã được xóa thành công' };
     } catch (error) {
-      return { status: 'unsuccess', message: 'Lỗi khi xóa printer' };
+      return {
+        status: 'unsuccess',
+        message: 'Lỗi khi xóa printer: ' + error.message,
+      };
     }
   }
-  
+
   async getPrinterDetail(param: { uid: string; printer_id: string }): Promise<{
     status: string;
     message: string;
     data?: any;
   }> {
     const { uid, printer_id } = param;
-  
+
     const user = await this.prisma.user.findUnique({
       where: { uid },
     });
-  
+
     if (!user) {
       return { status: 'unsuccess', message: 'UID không tồn tại' };
     }
-  
+
     if (user.role !== 'spso') {
-      return { status: 'unsuccess', message: 'Không có quyền thực hiện thao tác này' };
+      return {
+        status: 'unsuccess',
+        message: 'Không có quyền thực hiện thao tác này',
+      };
     }
-  
+
     // Kiểm tra printer_id có tồn tại
     const printer = await this.prisma.printer.findUnique({
       where: { id: printer_id },
@@ -311,16 +342,16 @@ export class PrinterService {
         page_size: {
           select: {
             page_size: true,
-            current_page: true
-          }
+            current_page: true,
+          },
         }, // Bao gồm thông tin page_size của printer
       },
     });
-  
+
     if (!printer) {
       return { status: 'unsuccess', message: 'Printer ID không tồn tại' };
     }
-  
+
     // Truy vấn các print_job liên quan đến printer
     const printJobs = await this.prisma.print_job.findMany({
       where: { printer_id },
@@ -329,9 +360,9 @@ export class PrinterService {
           select: { mssv: true, name: true },
         },
       },
-      orderBy: {time: 'desc'}
+      orderBy: { time: 'desc' },
     });
-  
+
     // Chuẩn bị dữ liệu trả về
     const data = {
       id: printer.id,
@@ -352,11 +383,10 @@ export class PrinterService {
         copy: job.copy,
         status: job.status,
         mssv: job.user?.mssv || null,
-        name: job.user?.name || null
+        name: job.user?.name || null,
       })),
     };
-  
+
     return { status: 'success', message: 'Success', data };
   }
-  
 }

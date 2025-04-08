@@ -1,4 +1,3 @@
-import { tr } from '@faker-js/faker/.';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -21,7 +20,7 @@ export class PrintJobService {
           select: {
             name: true, // Lấy tên của printer
             floor: true,
-            building: true
+            building: true,
           },
         },
       },
@@ -39,7 +38,16 @@ export class PrintJobService {
     two_side: boolean;
     color: boolean;
   }): Promise<{ status: string; message: string }> {
-    const { printer_id, student_id, filename, page_size, page, copy, two_side, color } = data;
+    const {
+      printer_id,
+      student_id,
+      filename,
+      page_size,
+      page,
+      copy,
+      two_side,
+      color,
+    } = data;
 
     // Tổng số trang cần thiết
     const totalPagesRequired = page * copy;
@@ -63,11 +71,16 @@ export class PrintJobService {
     });
 
     if (!printer || printer.status !== 'enable') {
-      return { status: 'unsuccess', message: 'Printer ID không hợp lệ hoặc không khả dụng' };
+      return {
+        status: 'unsuccess',
+        message: 'Printer ID không hợp lệ hoặc không khả dụng',
+      };
     }
 
     // Kiểm tra khổ giấy và số lượng trang của student
-    const studentPageSize = student.page_size.find((ps) => ps.page_size === page_size);
+    const studentPageSize = student.page_size.find(
+      (ps) => ps.page_size === page_size,
+    );
     if (!studentPageSize || studentPageSize.current_page < totalPagesRequired) {
       return {
         status: 'unsuccess',
@@ -76,7 +89,9 @@ export class PrintJobService {
     }
 
     // Kiểm tra khổ giấy và số lượng trang của printer
-    const printerPageSize = printer.page_size.find((ps) => ps.page_size === page_size);
+    const printerPageSize = printer.page_size.find(
+      (ps) => ps.page_size === page_size,
+    );
     if (!printerPageSize || printerPageSize.current_page < totalPagesRequired) {
       return {
         status: 'unsuccess',
@@ -113,13 +128,17 @@ export class PrintJobService {
       // Cập nhật student_page_size
       this.prisma.student_page_size.update({
         where: { student_id_page_size: { student_id, page_size } },
-        data: { current_page: studentPageSize.current_page - totalPagesRequired },
+        data: {
+          current_page: studentPageSize.current_page - totalPagesRequired,
+        },
       }),
 
       // Cập nhật printer_page_size
       this.prisma.printer_page_size.update({
         where: { printer_id_page_size: { printer_id, page_size } },
-        data: { current_page: printerPageSize.current_page - totalPagesRequired },
+        data: {
+          current_page: printerPageSize.current_page - totalPagesRequired,
+        },
       }),
     ]);
 
@@ -138,15 +157,18 @@ export class PrintJobService {
     const spso = await this.prisma.user.findUnique({
       where: { uid: spso_id },
     });
-  
+
     if (!spso) {
       throw new HttpException('SPSO ID không tồn tại', HttpStatus.BAD_REQUEST);
     }
-  
+
     if (spso.role !== 'spso') {
-      throw new HttpException('Người dùng không có quyền truy cập', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        'Người dùng không có quyền truy cập',
+        HttpStatus.FORBIDDEN,
+      );
     }
-  
+
     // Kiểm tra `uid` có tồn tại hay không
     const student = await this.prisma.user.findUnique({
       where: { uid },
@@ -159,31 +181,34 @@ export class PrintJobService {
         },
       },
     });
-  
+
     if (!student || student.role !== 'student') {
-      throw new HttpException('Student ID không tồn tại', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Student ID không tồn tại',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-  
+
     // Xử lý dữ liệu student
     const totalPage = student.page_size.reduce(
       (sum, pageSize) => sum + pageSize.current_page,
       0,
     );
-  
+
     const totalPrintJob = student.print_job.length;
-  
+
     const progressPrintJob = student.print_job.filter(
       (job) => job.status === 'progress',
     ).length;
-  
+
     const successPrintJob = student.print_job.filter(
       (job) => job.status === 'success',
     ).length;
-  
+
     const failPrintJob = student.print_job.filter(
       (job) => job.status === 'fail',
     ).length;
-  
+
     // Trả về kết quả
     return {
       status: 'success',
@@ -211,6 +236,4 @@ export class PrintJobService {
       },
     };
   }
-  
-
 }

@@ -37,12 +37,20 @@ const BuyPagesPage: React.FC = () => {
   // Hàm xử lý khi thay đổi số trang cần mua
   const handlePagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = Number(e.target.value);
-    if (value < 10) value = 10; // Giới hạn số trang mua tối thiểu là 10
     setPagesToBuy(value);
   };
 
   // Hàm xử lý khi nhấn nút thanh toán
   const handlePayment = async () => {
+    if (pagesToBuy < 10) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Lỗi",
+        detail: "Số trang cần mua tối thiểu là 10 trang.",
+        life: 3000,
+      });
+      return;
+    }
     const response = await studentAPI.buyPage(pageSize, pagesToBuy);
     if (response?.status === "success") {
       toast.current?.show({
@@ -127,7 +135,6 @@ const BuyPagesPage: React.FC = () => {
                 value={String(pagesToBuy)}
                 onChange={handlePagesChange}
                 type="number"
-                min={10}
                 placeholder="Số trang cần mua"
                 className="w-full"
               />

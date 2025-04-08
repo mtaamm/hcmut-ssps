@@ -9,8 +9,8 @@ async function main() {
     Array.from({ length: 300 }).map((_, index) =>
       prisma.user.create({
         data: {
-          username: `student${index + 1}`,
-          password: faker.internet.password(),
+          username: `mt${index + 1}`,
+          password: "mt",
           name: `Nguyễn Văn ${index+"A"}`,
           role: 'student',
           mssv: 2213020 + index,
@@ -36,7 +36,7 @@ async function main() {
   const spsoUser = await prisma.user.create({
     data: {
       username: 'spso',
-      password: faker.internet.password(),
+      password: "spso",
       name: 'spso',
       role: 'spso',
       mssv: null,

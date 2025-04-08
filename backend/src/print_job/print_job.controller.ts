@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { PrintJobService } from './print_job.service';
 
 @Controller('print-job')
@@ -7,9 +15,12 @@ export class PrintJobController {
 
   @Get('get-print-history')
   async getPrintHistory(@Query() req) {
-    const {uid} = req
+    const { uid } = req;
     if (!uid) {
-      throw new HttpException('Student UID is required', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Student UID is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const printHistory = await this.printJobService.getPrintHistory(uid);
@@ -30,7 +41,16 @@ export class PrintJobController {
 
   @Post('create-print-job')
   async createPrintJob(@Body() body: any) {
-    const { printer_id, student_id, filename, page_size, page, copy, two_side, color } = body;
+    const {
+      printer_id,
+      student_id,
+      filename,
+      page_size,
+      page,
+      copy,
+      two_side,
+      color,
+    } = body;
 
     if (
       !printer_id ||
@@ -63,7 +83,10 @@ export class PrintJobController {
     @Query('uid') uid: string,
   ) {
     if (!spso_id || !uid) {
-      throw new HttpException('Thiếu thông tin yêu cầu', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Thiếu thông tin yêu cầu',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     return this.printJobService.getStudentHistorySpso(spso_id, uid);

@@ -5,6 +5,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
   providers: [PrinterService, PrismaService],
-  controllers: [PrinterController]
+  controllers: [PrinterController],
 })
 export class PrinterModule {}

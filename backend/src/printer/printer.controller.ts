@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query, Get, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Query, Get } from '@nestjs/common';
 import { PrinterService } from './printer.service';
 import { CreatePrinterParam, PageSize } from './dto/create-printer.dto';
 
@@ -14,7 +14,7 @@ export class PrinterController {
     @Body('two_side') twoSide: boolean,
     @Body('color') color: boolean,
   ) {
-    console.log(pageSize, page, copy, twoSide, color)
+    console.log(pageSize, page, copy, twoSide, color);
     return this.printerService.getMatchPrinters(
       pageSize,
       page,
@@ -27,7 +27,11 @@ export class PrinterController {
   @Get('get-all')
   async getAllPrinters(@Query('uid') uid: string) {
     if (!uid) {
-      return { status: 'unsuccess', message: 'UID không được để trống', data: [] };
+      return {
+        status: 'unsuccess',
+        message: 'UID không được để trống',
+        data: [],
+      };
     }
 
     return this.printerService.getAllPrinters(uid);
@@ -72,9 +76,7 @@ export class PrinterController {
   }
 
   @Post('toggle-status')
-  async toggleStatus(
-    @Body() body: { uid: string; printer_id: string },
-  ) {
+  async toggleStatus(@Body() body: { uid: string; printer_id: string }) {
     const { uid, printer_id } = body;
 
     // Kiểm tra đầu vào
@@ -89,9 +91,7 @@ export class PrinterController {
   }
 
   @Post('delete')
-  async deletePrinter(
-    @Body() body: { uid: string; printer_id: string },
-  ) {
+  async deletePrinter(@Body() body: { uid: string; printer_id: string }) {
     const { uid, printer_id } = body;
 
     // Kiểm tra đầu vào
